@@ -1,0 +1,7 @@
+steps: 50040
+1) count: 372
+2) count: 545
+Sum count: 917
+- - - - - - - - - - -
+ICE count: 2916
+Yield (e-/n): 0.2916
