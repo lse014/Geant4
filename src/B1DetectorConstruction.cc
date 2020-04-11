@@ -70,9 +70,6 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   G4Colour red(1.0, 0.0, 0.0);
   G4Colour green(0.0, 1.0, 0.0);
   G4Colour white(1.0, 1.0, 1.0);
-  G4Colour magenta(1.0, 0.0, 1.0);
-
-
 
   // Option to switch on/off checking of volumes overlaps
   //
@@ -87,11 +84,9 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   G4double alpide_y = 15.0*mm;
   G4double alpide_z = 50.0*um;
   G4double al_z = 25*um;
-  //G4double gd_z = 25*um;
   G4double gd_z = 50*um; //Test parameter
 
   // Positions
-  //G4double alpide_pos = 1.5*mm;
   G4double alpide_pos = 500*um; //Test parameter
   G4double sensitive_pos = 1.5*um;
   G4double al_pos = 19.5*um;
@@ -167,16 +162,8 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
                         0,                       //copy number
                         checkOverlaps);          //overlaps checking
 
-
-      // Set AlpideSensitive as scoring volume
-      //
-      // fScoringVolume = logicAlpideSens1;
-
-
-
       // Al layer 1
       //
-
        G4Box* solidAl_1
           = new G4Box("al_1",        //its name
                       0.5*alpide_x,       // its size
@@ -198,9 +185,6 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 
           G4VisAttributes* al_1VisAttributes= new G4VisAttributes(green);
           logicAl_1->SetVisAttributes(al_1VisAttributes);
-
-
-
 
       //
       // Alpide 2
@@ -271,27 +255,24 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
               G4VisAttributes* al_2VisAttributes= new G4VisAttributes(green);
               logicAl_2->SetVisAttributes(al_2VisAttributes);
 
-
-
   //
   // Gd foil
   //
-
    G4Box* solidGd
-      = new G4Box("gd",          //its name
+      = new G4Box("gd",               //its name
                   0.5*alpide_x,       // its size
                   0.5*alpide_y,
                   0.5*gd_z);
     G4LogicalVolume* logicGd =
-      new G4LogicalVolume(solidGd,         //its solid
-                          converter_mat,          //its material
-                                    "gd");           //its name
+      new G4LogicalVolume(solidGd,               //its solid
+                          converter_mat,         //its material
+                                    "gd");       //its name
 
       new G4PVPlacement(0,                       //no rotation
-                        G4ThreeVector(0, 0, 0),                    //at position
-                        logicGd,             //its logical volume
-                        "gd",                //its name
-                        logicWorld,                //its mother  volume
+                        G4ThreeVector(0, 0, 0),  //at position
+                        logicGd,                 //its logical volume
+                        "gd",                    //its name
+                        logicWorld,              //its mother  volume
                         false,                   //no boolean operation
                         0,                       //copy number
                         checkOverlaps);          //overlaps checking
@@ -299,17 +280,13 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 
       G4VisAttributes* gdVisAttributes= new G4VisAttributes(white);
       logicGd->SetVisAttributes(gdVisAttributes);
-      // fScoringVolume = logicGd;
 
 
+    // Set scoring volume
+    fScoringVolume2 = logicAlpideSens2;
+    fScoringVolume1 = logicAlpideSens1;
+    fScoringVolume0 = logicGd;
 
-      // MY CODE - Start
-        // Set scoring volume
-        fScoringVolume2 = logicAlpideSens2;
-        fScoringVolume1 = logicAlpideSens1;
-        //fScoringVolume = logicAl_2;
-        fScoringVolume0 = logicGd;
-      // MY CODE - End
 
 
   //
