@@ -55,12 +55,11 @@ B1RunAction::B1RunAction()
   man->SetNtupleMerging(true);
   man->SetActivation(true);
   man->	SetFirstNtupleId(1);
-  // man->CreateH1("h1","Energy deposition in detector (keV)",100,0.0,100*keV);
   //	Creating	ntuples
   man->CreateNtuple("ScorerKin",	"eKin per event");
   man->CreateNtupleDColumn("EventID");
   man->CreateNtupleDColumn("KineticEnergy");
-  // MY CODE - Start
+  // Ntuple columns
   man->CreateNtupleDColumn("X");
   man->CreateNtupleDColumn("Y");
   man->CreateNtupleDColumn("Z");
@@ -70,7 +69,6 @@ B1RunAction::B1RunAction()
   man->CreateNtupleDColumn("parentID");
   man->CreateNtupleDColumn("particleID");
 
-  // MY CODE - End
   man->FinishNtuple();
   // add new units for dose
   //

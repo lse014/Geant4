@@ -61,7 +61,6 @@ void B1EventAction::BeginOfEventAction(const G4Event*)
 {
   fEdep = 0.;
   fEkin.clear();
-  // MY CODE - Start
   X.clear();
   Y.clear();
   Z.clear();
@@ -70,7 +69,6 @@ void B1EventAction::BeginOfEventAction(const G4Event*)
   trackID.clear();
   parentID.clear();
   particleID.clear();
-  // MY CODE - End
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,16 +77,13 @@ void B1EventAction::EndOfEventAction(const G4Event*evt)
 {
   // accumulate statistics in run action
   fRunAction->AddEdep(fEdep);
-  // G4Event* evt;
   G4int EventID = evt->GetEventID();
-  //G4cout << "EventID: "<<EventID<<G4endl;
   G4AnalysisManager*	man	=	G4AnalysisManager::Instance();
+
   G4int HitPerEvent = fEkin.size();
   for (int i = 0; i < HitPerEvent; i++) {
     man->FillNtupleDColumn(1,0,EventID);
     man->FillNtupleDColumn(1,1,fEkin[i]);
-
-    // MY CODE - Start
     man->FillNtupleDColumn(1,2,X[i]);
     man->FillNtupleDColumn(1,3,Y[i]);
     man->FillNtupleDColumn(1,4,Z[i]);
@@ -97,10 +92,6 @@ void B1EventAction::EndOfEventAction(const G4Event*evt)
     man->FillNtupleDColumn(1,7,trackID[i]);
     man->FillNtupleDColumn(1,8,parentID[i]);
     man->FillNtupleDColumn(1,9,particleID[i]);
-
-    //G4cout << "----------------ONE EVENT----------------"<<G4endl;
-
-    // MY CODE - End
 
     man->AddNtupleRow(1);
   }

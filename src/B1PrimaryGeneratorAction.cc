@@ -44,7 +44,6 @@
 B1PrimaryGeneratorAction::B1PrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
   fParticleGun(0)
-  //fEnvelopeBox(0)
 {
   G4int n_particle = 1;
   fParticleGun  = new G4ParticleGun(n_particle);
@@ -76,8 +75,7 @@ void B1PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
-
-
+  
   //G4double size = 0.8;
   G4double x0 = 11* (G4UniformRand()-0.5);
   G4double y0 = 11 * (G4UniformRand()-0.5);

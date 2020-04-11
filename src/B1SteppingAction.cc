@@ -81,31 +81,11 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 
   // get volume of the current step
   G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-  // check if we are in one of the scoring volumes (ALPIDE1, ALPIDE2 or converter foil)
-
-
-
-
-  // // Get volume of preStepPointVolume
-  // G4LogicalVolume* pre = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-  //
-  // // Get volume of postStepPointVolume
-  // G4LogicalVolume* post = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-  //
-  //
-  // if ((post!=fScoringVolume) && (pre==fScoringVolume) ){return;}
-  //{G4cout << "pre: "<<pre->GetName()<<", post: "<<post->GetName()<<G4endl;return;}
-  //if ((pre!=fScoringVolume) ) return;
-  // collect energy deposited in this step
-  // G4double eKin = step->GetTrack()->GetKineticEnergy ();
-  // G4double edepStep = step->GetTotalEnergyDeposit();
-  // fEventAction->AddEdep(edepStep);
-
 
   if ((volume!=fScoringVolume0)) return; //track inside converter foil
   //if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
   G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-  if(particleName== "e-" || particleName=="gamma"){ //|| particleName == "neutron"){
+  if(particleName== "e-" || particleName=="gamma"){
 
     // Converter foil
     G4double x = step->GetTrack()->GetVertexPosition().getX();
@@ -123,15 +103,12 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     G4String volumeAtVertex_ = step->GetTrack()->GetLogicalVolumeAtVertex()->GetName();
     G4String processName_ = step->GetTrack()->GetCreatorProcess()->GetProcessName();
 
-    // MY CODE - Start
-    // production process: compt, nCapture, phot, conv
     G4double processName = 0.0;     // default
     if (processName_== "compt")     {processName = 1;}
     if (processName_== "nCapture")  {processName = 2;}
     if (processName_== "phot")      {processName = 3;}
     if (processName_== "conv")      {processName = 4;}
 
-    // production volumes: gd, AlpideSens1, al_1, AlpideSens2, al_2
     G4double volumeAtVertex = 0.0;
     if (volumeAtVertex_== "gd")               {volumeAtVertex =  1;}
     if (volumeAtVertex_== "AlpideSens1")      {volumeAtVertex =  2;}
@@ -139,13 +116,12 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     if (volumeAtVertex_== "AlpideSens2")      {volumeAtVertex =  4;}
     if (volumeAtVertex_== "al_2")             {volumeAtVertex =  5;}
 
-    // particle ID: 1: electron, 2: gamma
     G4double particle_id = 0.0; // default
     if (particleName == "neutron"){particle_id = 0;}
     if (particleName == "e-")     {particle_id = 1;}
     if (particleName == "gamma")  {particle_id = 2;}
-    //G4cout<< "trackID: "<<trackID << ", parentID: "<<parentID <<", S: "<<currentStepNumber <<",z: "<<z << G4endl;
-    //G4cout<< "trackID: "<<track_id << ", parentID: "<<parent_id <<G4endl;
+
+    // Store step information
     fEventAction->StoreKineticEnergy(eKin);
     fEventAction->StoreX(x);
     fEventAction->StoreY(y);
@@ -155,9 +131,6 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     fEventAction->StoreTrackID(track_id);
     fEventAction->StoreParentID(parent_id);
     fEventAction->StoreParticleID(particle_id);
-
-
-    // MY CODE - End
   }
 
 }
