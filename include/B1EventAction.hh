@@ -51,8 +51,6 @@ class B1EventAction : public G4UserEventAction
 
     void AddEdep(G4double edep) { fEdep += edep; }
     void StoreKineticEnergy(G4double ekin) { fEkin.push_back(ekin); }
-
-    // MY CODE - Start
     void StoreX(G4double x) { X.push_back(x); }
     void StoreY(G4double y) { Y.push_back(y); }
     void StoreZ(G4double z) { Z.push_back(z); }
@@ -62,13 +60,11 @@ class B1EventAction : public G4UserEventAction
     void StoreParentID( G4double parent_id) {parentID.push_back(parent_id); }
     void StoreParticleID( G4double particle_id) {particleID.push_back(particle_id); }
 
-    // MY CODE - End
 
   private:
     B1RunAction* fRunAction;
     G4double     fEdep;
 
-    // MY CODE - Start
     std::vector<G4double> fEkin;
     std::vector<G4double> X;
     std::vector<G4double> Y;
@@ -79,7 +75,6 @@ class B1EventAction : public G4UserEventAction
     std::vector<G4double> parentID;
     std::vector<G4double> particleID;
 
-    // MY CODE - End
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
