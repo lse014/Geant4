@@ -51,11 +51,12 @@ int main(int argc,char** argv)
 {
   // Detect interactive mode (if no arguments) and define UI session
   //
+
+
   G4UIExecutive* ui = 0;
   if ( argc == 1 ) {
     ui = new G4UIExecutive(argc, argv);
   }
-
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
@@ -70,7 +71,8 @@ int main(int argc,char** argv)
   // Set mandatory initialization classes
   //
   // Detector construction
-  B1DetectorConstruction* det = new B1DetectorConstruction();
+  //B1DetectorConstruction* det = new B1DetectorConstruction();
+  B1DetectorConstruction* det = new B1DetectorConstruction(atof(argv[2]), atof(argv[3])); //2: dist, 3: thickness
   runManager->SetUserInitialization(det);
 
   // Physics list
@@ -78,8 +80,18 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(new PhysicsList(det));
   setenv("G4NEUTRONHP_USE_ONLY_PHOTONEVAPORATION", "1", true);
 
+  char cfilename[100];
+	 strcpy(cfilename,"dist");
+   strcat(cfilename,argv[2]);
+   strcat(cfilename,"um_");
+   strcat(cfilename,"thick");
+   strcat(cfilename,argv[3]);
+   strcat(cfilename,"um");
+  //G4cout << (G4String)filename << G4endl;
+  G4String filename = (G4String)cfilename;
+
   // User action initialization
-  runManager->SetUserInitialization(new B1ActionInitialization());
+  runManager->SetUserInitialization(new B1ActionInitialization(filename));
 
   // Initialize visualization
   //
@@ -93,6 +105,7 @@ int main(int argc,char** argv)
 
   // Process macro or start UI session
   //
+
   if ( ! ui ) {
     // batch mode
     G4String command = "/control/execute ";

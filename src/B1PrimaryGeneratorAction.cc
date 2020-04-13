@@ -75,7 +75,7 @@ void B1PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
-  
+
   //G4double size = 0.8;
   G4double x0 = 11* (G4UniformRand()-0.5);
   G4double y0 = 11 * (G4UniformRand()-0.5);

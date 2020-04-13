@@ -41,7 +41,7 @@ class G4LogicalVolume;
 class B1DetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    B1DetectorConstruction();
+    B1DetectorConstruction(G4double distance, G4double thickness);
     virtual ~B1DetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
@@ -52,6 +52,9 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume*  fScoringVolume0;
     G4LogicalVolume*  fScoringVolume1;
     G4LogicalVolume*  fScoringVolume2;
+    G4double alpide_pos;
+    G4double gd_z;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

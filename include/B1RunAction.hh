@@ -46,7 +46,7 @@ class G4Run;
 class B1RunAction : public G4UserRunAction
 {
   public:
-    B1RunAction();
+    B1RunAction(G4String filename);
     virtual ~B1RunAction();
 
     // virtual G4Run* GenerateRun();
@@ -59,6 +59,7 @@ class B1RunAction : public G4UserRunAction
     G4Accumulable<G4double> fEdep;
     G4Accumulable<G4double> fEdep2;
     G4AnalysisManager*	man;
+
 };
 
 #endif

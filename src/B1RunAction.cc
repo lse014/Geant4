@@ -42,15 +42,19 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1RunAction::B1RunAction()
+B1RunAction::B1RunAction(G4String filename)
 : G4UserRunAction(),
   fEdep(0.),
   fEdep2(0.),
   man(0)
 {
+
   ////root stuff
+  
+  G4String fileName = filename;
   man = G4AnalysisManager::Instance();
-  man->SetFileName("Electrons");
+  man->SetFileName(fileName);
+  //man->SetFileName("../B1/dat/sensor/Electrons");
   man->SetVerboseLevel(1);
   man->SetNtupleMerging(true);
   man->SetActivation(true);

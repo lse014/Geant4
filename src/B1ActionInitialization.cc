@@ -35,9 +35,11 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1ActionInitialization::B1ActionInitialization()
+B1ActionInitialization::B1ActionInitialization(G4String filename)
  : G4VUserActionInitialization()
-{}
+{
+  actionFileName = filename;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -48,7 +50,7 @@ B1ActionInitialization::~B1ActionInitialization()
 
 void B1ActionInitialization::BuildForMaster() const
 {
-  B1RunAction* runAction = new B1RunAction;
+  B1RunAction* runAction = new B1RunAction(actionFileName);
   SetUserAction(runAction);
 }
 
@@ -57,14 +59,13 @@ void B1ActionInitialization::BuildForMaster() const
 void B1ActionInitialization::Build() const
 {
   SetUserAction(new B1PrimaryGeneratorAction);
-
-  B1RunAction* runAction = new B1RunAction;
+  B1RunAction* runAction = new B1RunAction(actionFileName); //filename here
   SetUserAction(runAction);
-  
+
   B1EventAction* eventAction = new B1EventAction(runAction);
   SetUserAction(eventAction);
-  
+
   SetUserAction(new B1SteppingAction(eventAction));
-}  
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

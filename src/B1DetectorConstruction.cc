@@ -46,11 +46,14 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1DetectorConstruction::B1DetectorConstruction()
+B1DetectorConstruction::B1DetectorConstruction(G4double distance, G4double thickness)
 : G4VUserDetectorConstruction(),
   fScoringVolume1(0),
   fScoringVolume2(0)
-{ }
+{
+  alpide_pos = distance*um;
+  gd_z = thickness*um;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -63,7 +66,6 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 {
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
-
 
   // Colors
   //
@@ -78,16 +80,33 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   //
   // World
   //
+  // Test paramteters
+
+      /// Distance
+      //
+      //G4double alpide_pos = 100*um; //Test parameter
+      // G4double alpide_pos = 200*um; //Test parameter
+      // G4double alpide_pos = 500*um; //Test parameter
+
+      /// Thickness
+      //
+      // G4double gd_z = 5*um; //Test parameter 1
+      //G4double gd_z = 10*um; //Test parameter 2 *
+      // G4double gd_z = 50*um; //Test parameter 3
+      // G4double gd_z = 50*um; //Test parameter 4
+      // G4double gd_z = 50*um; //Test parameter 5
+
   // Dimentions
   G4double world_sizeXYZ = 30 *cm;
   G4double alpide_x = 30.0*mm;
   G4double alpide_y = 15.0*mm;
   G4double alpide_z = 50.0*um;
   G4double al_z = 25*um;
-  G4double gd_z = 50*um; //Test parameter
+  //G4double gd_z = 10*um; // Default*
+
 
   // Positions
-  G4double alpide_pos = 500*um; //Test parameter
+  //G4double alpide_pos = 500*um; //Default?*
   G4double sensitive_pos = 1.5*um;
   G4double al_pos = 19.5*um;
   // Materials
