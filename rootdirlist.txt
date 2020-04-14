@@ -1,5 +1,0 @@
-thick_05um.root
-thick_100um.root
-thick_10um.root
-thick_25um.root
-thick_50um.root

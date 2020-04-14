@@ -82,8 +82,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
   // get volume of the current step
   G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
-  if ((volume!=fScoringVolume0)) return; //track inside converter foil
-  //if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
+  //if ((volume!=fScoringVolume0)) return; //track inside converter foil
+  if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
   G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
   if(particleName== "e-" || particleName=="gamma"){
 
