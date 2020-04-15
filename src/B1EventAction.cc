@@ -47,7 +47,8 @@ B1EventAction::B1EventAction(B1RunAction* runAction)
   creatorProcess(0.),
   trackID(0.),
   parentID(0.),
-  particleID(0.)
+  particleID(0.),
+  stepID(0.)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -69,6 +70,7 @@ void B1EventAction::BeginOfEventAction(const G4Event*)
   trackID.clear();
   parentID.clear();
   particleID.clear();
+  stepID.clear();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -92,6 +94,7 @@ void B1EventAction::EndOfEventAction(const G4Event*evt)
     man->FillNtupleDColumn(1,7,trackID[i]);
     man->FillNtupleDColumn(1,8,parentID[i]);
     man->FillNtupleDColumn(1,9,particleID[i]);
+    man->FillNtupleDColumn(1,10,stepID[i]);
 
     man->AddNtupleRow(1);
   }

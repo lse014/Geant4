@@ -50,7 +50,7 @@ B1RunAction::B1RunAction(G4String filename)
 {
 
   ////root stuff
-  
+
   G4String fileName = filename;
   man = G4AnalysisManager::Instance();
   man->SetFileName(fileName);
@@ -72,6 +72,7 @@ B1RunAction::B1RunAction(G4String filename)
   man->CreateNtupleDColumn("trackID");
   man->CreateNtupleDColumn("parentID");
   man->CreateNtupleDColumn("particleID");
+  man->CreateNtupleDColumn("stepID");
 
   man->FinishNtuple();
   // add new units for dose

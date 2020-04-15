@@ -59,6 +59,7 @@ class B1EventAction : public G4UserEventAction
     void StoreTrackID( G4double track_id) {trackID.push_back(track_id); }
     void StoreParentID( G4double parent_id) {parentID.push_back(parent_id); }
     void StoreParticleID( G4double particle_id) {particleID.push_back(particle_id); }
+    void StoreStepID( G4double step_id) {stepID.push_back(step_id); }
 
 
   private:
@@ -74,6 +75,7 @@ class B1EventAction : public G4UserEventAction
     std::vector<G4double> trackID;
     std::vector<G4double> parentID;
     std::vector<G4double> particleID;
+    std::vector<G4double> stepID;
 
 };
 

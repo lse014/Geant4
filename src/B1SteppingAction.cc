@@ -82,8 +82,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
   // get volume of the current step
   G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
-  //if ((volume!=fScoringVolume0)) return; //track inside converter foil
-  if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
+  if ((volume!=fScoringVolume0)) return; //track inside converter foil
+  //if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
   G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
   if(particleName== "e-" || particleName=="gamma"){
 
@@ -99,6 +99,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 
     G4double eKin = step->GetTrack()->GetKineticEnergy();
     G4double track_id = (G4double)step->GetTrack()->GetTrackID();
+    G4double step_id = step->GetTrack()->GetCurrentStepNumber();
+    //G4cout << step_id << G4endl;
     G4double parent_id = (G4double)step->GetTrack()->GetParentID();
     G4String volumeAtVertex_ = step->GetTrack()->GetLogicalVolumeAtVertex()->GetName();
     G4String processName_ = step->GetTrack()->GetCreatorProcess()->GetProcessName();
@@ -129,8 +131,10 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     fEventAction->StoreProductionVolume(volumeAtVertex);
     fEventAction->StoreCreatorProcess(processName);
     fEventAction->StoreTrackID(track_id);
+    fEventAction->StoreStepID(step_id);
     fEventAction->StoreParentID(parent_id);
     fEventAction->StoreParticleID(particle_id);
+
   }
 
 }
