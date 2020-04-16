@@ -72,7 +72,7 @@ int main(int argc,char** argv)
   //
   // Detector construction
   //B1DetectorConstruction* det = new B1DetectorConstruction();
-  B1DetectorConstruction* det = new B1DetectorConstruction(atof(argv[2]), atof(argv[3])); //2: dist, 3: thickness
+  B1DetectorConstruction* det = new B1DetectorConstruction(atof(argv[3]), atof(argv[4])); //2: dist, 3: thickness
   runManager->SetUserInitialization(det);
 
   // Physics list
@@ -81,17 +81,18 @@ int main(int argc,char** argv)
   setenv("G4NEUTRONHP_USE_ONLY_PHOTONEVAPORATION", "1", true);
 
   char cfilename[100];
-	 strcpy(cfilename,"dist");
-   strcat(cfilename,argv[2]);
-   strcat(cfilename,"um_");
-   strcat(cfilename,"thick");
-   strcat(cfilename,argv[3]);
+	 strcpy(cfilename,argv[2]); //volume: sens/foil
+	 strcat(cfilename,"_dist");
+   strcat(cfilename,argv[3]); //dist
+   strcat(cfilename,"um");
+   strcat(cfilename,"_thick");
+   strcat(cfilename,argv[4]); //thick
    strcat(cfilename,"um");
   //G4cout << (G4String)filename << G4endl;
   G4String filename = (G4String)cfilename;
 
   // User action initialization
-  runManager->SetUserInitialization(new B1ActionInitialization(filename));
+  runManager->SetUserInitialization(new B1ActionInitialization(argv[2],filename));
 
   // Initialize visualization
   //

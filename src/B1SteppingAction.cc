@@ -41,12 +41,13 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1SteppingAction::B1SteppingAction(B1EventAction* eventAction)
+B1SteppingAction::B1SteppingAction(G4String volume, B1EventAction* eventAction)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
   fScoringVolume0(0),
   fScoringVolume1(0),
-  fScoringVolume2(0)
+  fScoringVolume2(0),
+  scoringVolume(volume)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -82,8 +83,16 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
   // get volume of the current step
   G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
-  if ((volume!=fScoringVolume0)) return; //track inside converter foil
-  //if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
+  if (scoringVolume == "foil")
+  {
+      if ((volume!=fScoringVolume0)) return; //track inside converter foil
+  }
+  if (scoringVolume == "sens")
+  {
+    if ((volume!=fScoringVolume1) && (volume!=fScoringVolume2) ) return; // track ALPIDE1 and ALPIDE2
+  }
+
+
   G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
   if(particleName== "e-" || particleName=="gamma"){
 

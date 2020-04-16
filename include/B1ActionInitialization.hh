@@ -38,13 +38,14 @@
 class B1ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    B1ActionInitialization(G4String filename);
+    B1ActionInitialization(G4String volume, G4String filename);
     virtual ~B1ActionInitialization();
 
     virtual void BuildForMaster() const;
     virtual void Build() const;
   private:
     G4String actionFileName;
+    G4String scoringVolume;
 
 };
 

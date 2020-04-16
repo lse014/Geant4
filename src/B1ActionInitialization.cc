@@ -35,10 +35,11 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B1ActionInitialization::B1ActionInitialization(G4String filename)
+B1ActionInitialization::B1ActionInitialization(G4String volume, G4String filename)
  : G4VUserActionInitialization()
 {
   actionFileName = filename;
+  scoringVolume = volume;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -65,7 +66,7 @@ void B1ActionInitialization::Build() const
   B1EventAction* eventAction = new B1EventAction(runAction);
   SetUserAction(eventAction);
 
-  SetUserAction(new B1SteppingAction(eventAction));
+  SetUserAction(new B1SteppingAction(scoringVolume, eventAction));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
