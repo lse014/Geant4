@@ -28,9 +28,6 @@ int sens(char* filename)
   tree->SetBranchAddress("creatorProcess",&creatorProcess);
   tree->SetBranchAddress("particleID",&particleID);
 
-  Double_t dist = 0.1;
-  Double_t thick = 0.01;
-
   // ELECTRON HISTOGRAMS
   TH1F *h_ekine1 = new TH1F("h_ekine1","Energy Spectrum ",1000,0,4);
     h_ekine1->SetAxisRange(0,50,"Y");
@@ -41,16 +38,18 @@ int sens(char* filename)
     h_ekine2->GetXaxis()->SetTitle("Ekine [MeV]");
     h_ekine2->GetYaxis()->SetTitle("count");
 
-
+  // counters
   Int_t neutrons = 10000;
   Int_t count1_tot = 0;
   Int_t count2_tot = 0;
   Int_t count_totICE = 0;
+
+  // loop thorugh all steps
   TString serialID;
   TString previousSerialID = "0";
   Double_t previousEventID = 0;
   Int_t n = (Int_t) tree->GetEntries();
-  for (Int_t i = 0; i < n ; i++) // loop thorugh all steps
+  for (Int_t i = 0; i < n ; i++)
   {
       tree->GetEntry(i);
       if (!(particleID == 1)) {continue;}// 1: electron
@@ -73,21 +72,12 @@ int sens(char* filename)
           case 4: volumeAtVertex_= "AlpideSens2" ; break;
           case 5: volumeAtVertex_= "al_2"        ; break;
         }
-        if (Z>0) // ALPIDE1 position
-          {
-            h_ekine1->Fill(ekine);
-            count1_tot++;
-          }
-        if (Z<0) // ALPIDE2 position
-          {
-            h_ekine2->Fill(ekine);
-            count2_tot++;
-          }
+        // if process is not nCapture, skip to next iteration
+        if (!(processName_== "nCapture")) {continue;}
+        if (Z>0) {h_ekine1->Fill(ekine);} // ALPIDE1 position
+        if (Z<0) {h_ekine2->Fill(ekine);} // ALPIDE2 position
 
-        if (processName_ == "nCapture" )
-        {
-          count_totICE++;
-        }
+
         previousSerialID = serialID;
         previousEventID = eventID;
 
@@ -107,6 +97,9 @@ int sens(char* filename)
     h2->GetXaxis()->SetTitle("Ekine [MeV]");
     h2->GetYaxis()->SetTitle("count");
 
+  Int_t totICE_1 = h1->GetEntries();
+  Int_t totICE_2 = h2->GetEntries();
+
   TCanvas *c2= new TCanvas("c2"," ");
     c2->Divide(2,1);
     c2->cd(2); h1->Draw();
@@ -117,9 +110,9 @@ int sens(char* filename)
 
   cout << "ALPIDE" << endl;
   cout << " steps: " << n << endl;
-  cout << " 1) count: "<< count1_tot << endl;
-  cout << " 2) count: "<< count2_tot << endl;
-  cout << " Sum count: "<< count2_tot+count1_tot << endl;
+  cout << " 1) count: "<< totICE_1 << endl;
+  cout << " 2) count: "<< totICE_2 << endl;
+  cout << " Sum count: "<< totICE_1+totICE_2 << endl;
   cout << " ICE count in ALPIDEs: "<< count_totICE << endl;
   cout << "Yield (e-/n): "<<(Float_t) count_totICE/neutrons << endl;
 
@@ -135,7 +128,7 @@ int sens(char* filename)
     strcat(txtname,".txt");
 
   ofstream myfile;
-    myfile.open (txtname); // this is a problem
+    myfile.open (txtname);
     myfile << "ALPIDE" <<  "\n";
     myfile << " steps: " << n << "\n";
     myfile << " 1) count: "<< count1_tot << "\n";
