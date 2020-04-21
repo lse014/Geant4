@@ -1,7 +1,7 @@
 
 TString MakeSerialID(Double_t trackID, Double_t parentID, Double_t eventID);
 
-int foil(char* filename)
+int foil_(char* filename)
 {
   TFile *f = TFile::Open(filename);
   //TFile *f = new TFile("../B1-build/Electrons.root");
@@ -34,7 +34,7 @@ int foil(char* filename)
   Double_t thick = 0.025; // 5um-25um --> 0.005mm-0.025mm
 
   // Converterfoil HISTOGRAMS
-  Int_t bin_nmbr = 100;
+  Int_t bin_nmbr =100;
   TH1F *h_foil = new TH1F("h_foil","nCapture",bin_nmbr,-(thick/2+0.005),thick/2+0.005);
   //TH1F *h_foil = new TH1F("h_foil","nCapture",bin_nmbr,-(thick/2+0.01),thick/2+0.01);
     h_foil->GetXaxis()->SetTitle("Z [mm]");
