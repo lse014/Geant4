@@ -51,7 +51,7 @@ int foil(char* filename)
     h_eEkine->SetFillColor(40);
     h_eEkine->SetLineColor(40);
     h_eEkine->SetFillStyle(3016);
-  TH1F *h_gEkine = new TH1F("h_gEkine","gEkine",100,0,5);
+  TH1F *h_gEkine = new TH1F("h_gEkine","gEkine",100,0,8); //100 bins, 5MeV
     h_gEkine->GetXaxis()->SetTitle("ekine [MeV]");
     h_gEkine->GetYaxis()->SetTitle("count");
 
@@ -72,23 +72,6 @@ int foil(char* filename)
   {
       tree->GetEntry(i);
 
-      switch ((Int_t)creatorProcess)
-      {
-        case 1: processName_= "compt"; break;
-        case 2: processName_= "nCapture"; break;
-        case 3: processName_= "phot"; break;
-        case 4: processName_= "conv"; break;
-      }
-      switch((Int_t)productionVolume)
-      {
-        case 1: volumeAtVertex_= "gd"          ; break;
-        case 2: volumeAtVertex_= "AlpideSens1" ; break;
-        case 3: volumeAtVertex_= "al_1"        ; break;
-        case 4: volumeAtVertex_= "AlpideSens2" ; break;
-        case 5: volumeAtVertex_= "al_2"        ; break;
-      }
-
-
       // track individual particles, not steps
       // serialID = MakeSerialID(trackID,parentID,eventID);
       // if (serialID == previousSerialID) {previousSerialID = serialID; continue;}
@@ -97,26 +80,31 @@ int foil(char* filename)
       // // must be created by nCapture
       // if (!(processName_== "nCapture")) {previousSerialID = serialID; continue;}
 
+      // nCapture profile. Fill once per event. No why wtf...
+      if (previouseventID != eventID){h_Z->Fill(Z);}
 
+      serialID = MakeSerialID(trackID,parentID,eventID); // Distinguish between particles
+      switch ((Int_t)creatorProcess){
+        case 1: processName_= "compt"; break;
+        case 2: processName_= "nCapture"; break;
+        case 3: processName_= "phot"; break;
+        case 4: processName_= "conv"; break;
+      }
+      switch((Int_t)productionVolume){
+        case 1: volumeAtVertex_= "gd"          ; break;
+        case 2: volumeAtVertex_= "AlpideSens1" ; break;
+        case 3: volumeAtVertex_= "al_1"        ; break;
+        case 4: volumeAtVertex_= "AlpideSens2" ; break;
+        case 5: volumeAtVertex_= "al_2"        ; break;
+      }
       // Filters, particle must be produced in inside foil by nCapture.
-      serialID = MakeSerialID(trackID,parentID,eventID);
-      if (serialID == previousSerialID || volumeAtVertex_ != "gd" || !(processName_== "nCapture"))
-          {
-            // Update IDs and go to next iteration
-            previouseventID = eventID;
-            previousSerialID = serialID;
-            previoustrackID = trackID;
-            previousParticleID = particleID;
-            continue;
-          }
-
-      // nCapture profile. Fill once per event.
-      if (previouseventID != eventID)
-      {
-        h_Z->Fill(Z);
-        // THESE STATISTICS ARE WRONG. one nuclei can undergo several gamma decays and internal conversions.
-        if (particleID == 1) {count_ICE++;}
-        if (particleID == 2) {count_gamma++;} //count nCapture resulting in gamma
+      if (serialID == previousSerialID || volumeAtVertex_ != "gd" || !(processName_== "nCapture")){
+        // Update IDs and go to next iteration
+        previouseventID = eventID;
+        previousSerialID = serialID;
+        previoustrackID = trackID;
+        previousParticleID = particleID;
+        continue;
       }
       //  ekine
       if (particleID == 1) {h_eEkine->Fill(ekine);} // electron
@@ -127,23 +115,22 @@ int foil(char* filename)
       //if (!(particleID== 1)) {continue;}
       //if (!(volumeAtVertex_== "gd")) {continue;}
 
-      // if (eventID != previouseventID) {cout<< "\n"<<endl;}
-      // if (particleID==1 && trackID != previoustrackID && previousParticleID == 1) {cout<< "- - - - - - - - - - - - - - - - - - - - - - - - "<<endl;}
-      // if (particleID==1)
-      // {cout <<"e-: "<<  eventID <<" " <<parentID <<" " <<trackID <<" "<<stepID<<" "<<ekine<<" ("<<X<<","<<Y<<","<<Z<<") " << productionVolume <<" "<< creatorProcess<<endl;}
-      // if (particleID==2)
-      // {cout <<"g: "<<  eventID <<" " <<parentID <<" " <<trackID <<" "<<stepID<<" "<<ekine<<" ("<<X<<","<<Y<<","<<Z<<") " << productionVolume <<" "<< creatorProcess<<endl;}
+      if (eventID != previouseventID) {cout<< "\n"<<endl;}
+      if (particleID==1 && trackID != previoustrackID && previousParticleID == 1) {cout<< "- - - - - - - - - - - - - - - - - - - - - - - - "<<endl;}
+      if (particleID==1)
+      {cout <<"e-: "<<  eventID <<" " <<parentID <<" " <<trackID <<" "<<stepID<<" "<<ekine<<" ("<<X<<","<<Y<<","<<Z<<") " << productionVolume <<" "<< creatorProcess<<endl;}
+      if (particleID==2)
+      {cout <<"g: "<<  eventID <<" " <<parentID <<" " <<trackID <<" "<<stepID<<" "<<ekine<<" ("<<X<<","<<Y<<","<<Z<<") " << productionVolume <<" "<< creatorProcess<<endl;}
 
 
       // Update IDs
       previouseventID = eventID;
       previousSerialID = serialID;
-      //
-      // previousEventID = eventID;
       previoustrackID = trackID;
       previousParticleID = particleID;
       count++;
     }
+
     Int_t neutrons =10000;
     Int_t nCaptures = h_Z->GetEntries();
     Int_t totICE = h_eEkine->GetEntries();
@@ -154,7 +141,8 @@ int foil(char* filename)
     for (Int_t i = 2; i <= bin_nmbr; i++) // iterate through and integrate histogram bins
     {
       integral = h_Z->Integral(1,i);
-      if (integral/nCaptures >= 0.6)
+      if (integral/neutrons >= 0.6)
+      //if (integral/nCaptures >= 0.6)
       {
         z_60 = thick/2 + (h_Z->GetBinCenter(i));
         break;
@@ -180,13 +168,57 @@ int foil(char* filename)
     c1->cd(2); h_eEkine->Draw();
     c1->cd(3); h_gEkine->Draw();
 
-
     cout << "count: " <<count << endl;
     cout << "Incident neutrons: "<<neutrons << endl;
     cout << "nCaptures: " <<nCaptures<< endl;
     cout << "Z_60% nCapture: " <<z_60<< "mm" <<endl;
     cout << "Total ICE: " <<totICE<< endl;
+    cout << "ICE yield: " <<(Float_t)totICE/nCaptures<< endl;
     cout << "Total gamma: " <<totGamma<< endl;
+
+    // print count per bin and bin x-value
+    Double_t binContent;
+    Double_t binCenter;
+    Double_t perCapture;
+    Double_t perICE;
+    Double_t binCenterSum;
+    Double_t binCenterMean;
+    Double_t binContentSum;
+    //Int_t n_bins = h_eEkine->GetNbinsX(); electrons
+    Int_t n_bins = h_gEkine->GetNbinsX();
+    cout << "-------------------------------------------------------"<<endl;
+    //cout << "Energy [MeV]: entries (per neutron capture (10^-2 %) | per ICE (%))"<<endl;
+    cout << "Energy [MeV]: entries (per neutron capture (%))"<<endl;
+    cout << "-------------------------------------------------------"<<endl;
+
+    for (Int_t i = 0; i<n_bins; i++){
+      // binContent = h_eEkine->GetBinContent(i);
+      // binCenter = h_eEkine->GetBinCenter(i);
+      binContent = h_gEkine->GetBinContent(i);
+      binCenter = h_gEkine->GetBinCenter(i);
+      perCapture = binContent/nCaptures*100; //*10^-2 %
+      // perICE = binContent/totICE;
+
+      //cout << binCenter<<": "<< binContent<< " ("<<perCapture<<"% | "<<perICE<<"%)"<<endl;
+      cout << binCenter<<": "<< binContent<< " ("<<perCapture<<"% )"<<endl;
+
+      // binContentSum = 0;
+      // for(Int_t j = i; j<i;j++){ //NOT FINISHED
+      //   binContent = h_eEkine->GetBinContent(j);
+      //   cout << " "<<binContent<< endl;
+      //   binCenter = h_eEkine->GetBinCenter(j);
+      //   binContentSum = binContentSum + binContent;
+      //   binCenterSum = binCenterSum + binCenter;
+      // }
+      // perCapture = binContentSum/nCaptures*100;
+      // perICE= binContentSum/totICE*100;
+      // binCenterMean = binCenterSum; //this must be wrong
+
+      //if (perCapture<0.1){cout << binCenterMean<<": "<< binContentSum<< " (<0.1%)"<<endl;}
+      //else{cout << binCenterMean<<": "<< binContentSum<< " ("<<perCapture<<"% | "<<perICE<<"%)"<<endl;}
+      // cout << binCenterMean<<": "<< binContentSum<< " ("<<perCapture<<"% | "<<perICE<<"%)"<<endl;
+    }
+    cout << "-------------------------------------------------------"<<endl;
 
 
     // - - - - - - - - - - - - - - - - - - - - -
@@ -209,6 +241,7 @@ int foil(char* filename)
       myfile << "nCaptures: " <<nCaptures<< "\n";
       myfile << "Z_60% nCapture: " <<z_60<< "mm" << "\n";
       myfile << "Total ICE: " <<totICE<< "\n";
+      myfile << "ICE yield: " <<totICE/nCaptures<< "\n";
       myfile << "Total gamma: " <<totGamma << "\n";
     cout <<"saving terminal output as:"<< txtname << " ..."<<endl;
     myfile.close();

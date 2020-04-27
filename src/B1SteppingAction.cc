@@ -95,16 +95,23 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
 
   G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
   if(particleName== "e-" || particleName=="gamma"){
-
+    G4double x;
+    G4double y;
+    G4double z;
     // Converter foil
-    G4double x = step->GetTrack()->GetVertexPosition().getX();
-    G4double y = step->GetTrack()->GetVertexPosition().getY();
-    G4double z = step->GetTrack()->GetVertexPosition().getZ();
-
-    // ALPIDES
-    // G4double x = step->GetTrack()->GetPosition().getX();
-    // G4double y = step->GetTrack()->GetPosition().getY();
-    // G4double z = step->GetTrack()->GetPosition().getZ();
+    if (scoringVolume == "foil")
+    {
+     x = step->GetTrack()->GetVertexPosition().getX();
+     y = step->GetTrack()->GetVertexPosition().getY();
+     z = step->GetTrack()->GetVertexPosition().getZ();
+    }
+    // Sens
+    if (scoringVolume == "sens")
+    {
+     x = step->GetTrack()->GetPosition().getX();
+     y = step->GetTrack()->GetPosition().getY();
+     z = step->GetTrack()->GetPosition().getZ();
+    }
 
     G4double eKin = step->GetTrack()->GetKineticEnergy();
     G4double track_id = (G4double)step->GetTrack()->GetTrackID();

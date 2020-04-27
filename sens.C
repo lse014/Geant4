@@ -113,7 +113,7 @@ int sens(char* filename)
   cout << " 1) count: "<< totICE_1 << endl;
   cout << " 2) count: "<< totICE_2 << endl;
   cout << " Sum count: "<< totICE_1+totICE_2 << endl;
-  cout << " ICE count in ALPIDEs: "<< count_totICE << endl;
+  //cout << " ICE count in ALPIDEs: "<< count_totICE << endl;
   cout << "Yield (e-/n): "<<(Float_t) count_totICE/neutrons << endl;
 
   char pdfname[500];
@@ -134,7 +134,7 @@ int sens(char* filename)
     myfile << " 1) count: "<< count1_tot << "\n";
     myfile << " 2) count: "<< count2_tot << "\n";
     myfile << " Sum count: "<< count2_tot+count1_tot << "\n";
-    myfile << " ICE count in ALPIDEs: "<< count_totICE << "\n";
+    //myfile << " ICE count in ALPIDEs: "<< count_totICE << "\n";
     myfile << "Yield (e-/n): "<<(Float_t) count_totICE/neutrons << "\n";
     cout <<"saving terminal output as:"<< txtname << " ..."<<endl;
   myfile.close();

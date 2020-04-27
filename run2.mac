@@ -7,7 +7,8 @@
 /run/initialize
 
 /gun/particle neutron
-/gun/energy 0.025 eV
-# /tracking/verbose 2
+#/gun/energy 0.025 eV
+/gun/energy 0.0314 eV # gd157 resonance
+/tracking/verbose 1
 # /run/printProgress 1
 /run/beamOn 10000

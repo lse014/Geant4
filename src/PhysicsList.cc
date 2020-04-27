@@ -52,11 +52,11 @@
 #include "G4EmStandardPhysicsGS.hh"
 #include "G4EmStandardPhysicsSS.hh"
 #include "G4EmStandardPhysicsWVI.hh"
-#include "G4EmLivermorePhysics.hh"
+#include "G4EmLivermorePhysics.hh" //*
 #include "G4EmPenelopePhysics.hh"
 #include "G4EmLowEPPhysics.hh"
 #include "G4DecayPhysics.hh"
-#include "G4HadronPhysicsQGSP_BIC_HP.hh"
+#include "G4HadronPhysicsQGSP_BIC_HP.hh" //*
 
 #include "G4PAIModel.hh"
 #include "G4PAIPhotModel.hh"
@@ -94,11 +94,11 @@ PhysicsList::PhysicsList(B1DetectorConstruction* ptr)
 
   // Decay Physics is always defined
   fDecayPhysicsList = new G4DecayPhysics();
-  fHadronPhysicsList = new G4HadronPhysicsQGSP_BIC_HP();
+  fHadronPhysicsList = new G4HadronPhysicsQGSP_BIC_HP(); //*
 
   // EM physics
   fEmName = G4String("emstandard_opt0");
-  fEmPhysicsList = new G4EmLivermorePhysics(0);
+  fEmPhysicsList = new G4EmLivermorePhysics(0); //*
   G4EmParameters::Instance()->AddPAIModel("all","world","pai");
   G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
   SetVerboseLevel(0);
