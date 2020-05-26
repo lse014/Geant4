@@ -29,11 +29,13 @@ int sens(char* filename)
   tree->SetBranchAddress("particleID",&particleID);
 
   // ELECTRON HISTOGRAMS
-  TH1F *h_ekine1 = new TH1F("h_ekine1","Energy Spectrum ",1000,0,4);
+  Double_t range = 0.5;
+  Int_t bins = range/0.001;
+  TH1F *h_ekine1 = new TH1F("h_ekine1","Energy Spectrum ",bins,0,range);
     h_ekine1->SetAxisRange(0,50,"Y");
     h_ekine1->GetXaxis()->SetTitle("Ekine [MeV]");
     h_ekine1->GetYaxis()->SetTitle("count");
-  TH1F *h_ekine2 = new TH1F("h_ekine2","Energy Spectrum ",1000,0,4);
+  TH1F *h_ekine2 = new TH1F("h_ekine2","Energy Spectrum ",bins,0,range);
     h_ekine2->SetAxisRange(0,50,"Y");
     h_ekine2->GetXaxis()->SetTitle("Ekine [MeV]");
     h_ekine2->GetYaxis()->SetTitle("count");
@@ -52,58 +54,59 @@ int sens(char* filename)
   for (Int_t i = 0; i < n ; i++)
   {
       tree->GetEntry(i);
-      if (!(particleID == 1)) {continue;}// 1: electron
+      if (!(particleID == 1)) {continue;}// 1 = electron
 
-        serialID = MakeSerialID(trackID,parentID,eventID);
-        if (serialID == previousSerialID) {continue;} // track a particle ONCE
-
-        switch ((Int_t)creatorProcess)
-        {
-          case 1: processName_= "compt"; break;
-          case 2: processName_= "nCapture"; break;
-          case 3: processName_= "phot"; break;
-          case 4: processName_= "conv"; break;
-        }
-        switch((Int_t)productionVolume)
-        {
-          case 1: volumeAtVertex_= "gd"          ; break;
-          case 2: volumeAtVertex_= "AlpideSens1" ; break;
-          case 3: volumeAtVertex_= "al_1"        ; break;
-          case 4: volumeAtVertex_= "AlpideSens2" ; break;
-          case 5: volumeAtVertex_= "al_2"        ; break;
-        }
-        // if process is not nCapture, skip to next iteration
-        if (!(processName_== "nCapture")) {continue;}
-        if (Z>0) {h_ekine1->Fill(ekine);} // ALPIDE1 position
-        if (Z<0) {h_ekine2->Fill(ekine);} // ALPIDE2 position
-
-
-        previousSerialID = serialID;
+      switch ((Int_t)creatorProcess)
+      {
+        case 1: processName_= "compt"; break;
+        case 2: processName_= "nCapture"; break;
+        case 3: processName_= "phot"; break;
+        case 4: processName_= "conv"; break;
+      }
+      switch((Int_t)productionVolume)
+      {
+        case 1: volumeAtVertex_= "gd"          ; break;
+        case 2: volumeAtVertex_= "AlpideSens1" ; break;
+        case 3: volumeAtVertex_= "al_1"        ; break;
+        case 4: volumeAtVertex_= "AlpideSens2" ; break;
+        case 5: volumeAtVertex_= "al_2"        ; break;
+      }
+      serialID = MakeSerialID(trackID,parentID,eventID);
+      if (serialID == previousSerialID || volumeAtVertex_ != "gd" || !(processName_== "nCapture")){
+        // Update IDs and go to next iteration
         previousEventID = eventID;
+        previousSerialID = serialID;
+        continue;
+      }
+      if (Z>0) {h_ekine1->Fill(ekine);} // ALPIDE1 position
+      if (Z<0) {h_ekine2->Fill(ekine);} // ALPIDE2 position
 
+      previousSerialID = serialID;
+      previousEventID = eventID;
     }
 
+  Double_t totICE_1 = h_ekine1->GetEntries();
+  Double_t totICE_2 = h_ekine2->GetEntries();
 
-  TH1F *h1 = (TH1F*) h_ekine1->Clone();
-    h1->SetNameTitle("h1","1) electron spectrum");
-    h1->SetAxisRange(0,0.5,"X");
-    h1->SetAxisRange(0,50,"Y");
-    h1->GetXaxis()->SetTitle("Ekine [MeV]");
-    h1->GetYaxis()->SetTitle("count");
-  TH1F *h2 = (TH1F*) h_ekine2->Clone();
-    h2->SetNameTitle("h2","2) electron spectrum");
-    h2->SetAxisRange(0,0.5,"X");
-    h2->SetAxisRange(0,50,"Y");
-    h2->GetXaxis()->SetTitle("Ekine [MeV]");
-    h2->GetYaxis()->SetTitle("count");
+  TH1F *h_eEkine_scaled_1 = (TH1F*) h_ekine1->Clone("h_eEkine_scaled_1");
+    h_eEkine_scaled_1->Scale(100/totICE_1);
+    h_eEkine_scaled_1->GetYaxis()->SetTitle("Conversion Electrons %");
+  TH1F *h_eEkine_scaled_2 = (TH1F*) h_ekine2->Clone("h_eEkine_scaled_2");
+    h_eEkine_scaled_2->Scale(100/totICE_2);
+    h_eEkine_scaled_2->GetYaxis()->SetTitle("Conversion Electrons %");
 
-  Int_t totICE_1 = h1->GetEntries();
-  Int_t totICE_2 = h2->GetEntries();
+
+  TCanvas *c1= new TCanvas("c1"," ");
+    c1->Divide(2,1);
+    c1->ToggleEventStatus();
+    c1->cd(2); h_ekine1->Draw();
+    c1->cd(1); h_ekine2->Draw();
 
   TCanvas *c2= new TCanvas("c2"," ");
     c2->Divide(2,1);
-    c2->cd(2); h1->Draw();
-    c2->cd(1); h2->Draw();
+    c2->ToggleEventStatus();
+    c2->cd(2); h_eEkine_scaled_1->Draw();
+    c2->cd(1); h_eEkine_scaled_2->Draw();
 
 
 

@@ -40,30 +40,40 @@ int foil(char* filename)
   /// HISTOGRAMS:
   // nCapture profile
   Int_t bin_nmbr = 100;
-  TH1F *h_Z = new TH1F("h_Z","nCapture profile",bin_nmbr,-(thick/2+0.005),thick/2+0.005);
-    h_Z->GetXaxis()->SetTitle("Z [mm]");
+  TH1F *h_Z = new TH1F("h_Z","Neutron Capture Profile",bin_nmbr,-(thick/2+0.005),thick/2+0.005);
+    //h_Z->GetXaxis()->SetTitle("Z [mm]");
+    h_Z->GetXaxis()->SetTitle("Depth [mm]");
     h_Z->GetYaxis()->SetTitle("count");
   // Kinetic energy
-  TH1F *h_eEkine = new TH1F("h_eEkine","eEkine",100,0,0.5); //bin_nmbr = 100
-    h_eEkine->GetXaxis()->SetTitle("ekine [MeV]");
+  Double_t range = 0.5;
+  Int_t bins = range/0.001;
+  TH1F *h_eEkine = new TH1F("h_eEkine","eEkine",bins,0,range);
+  //bin_nmbr = 100
+    h_eEkine->GetXaxis()->SetTitle("Kinetic Energy [MeV]");
     h_eEkine->GetYaxis()->SetTitle("count");
     //h_eEkine->SetAxisRange(0,600,"Y");
     h_eEkine->SetFillColor(40);
     h_eEkine->SetLineColor(40);
     h_eEkine->SetFillStyle(3016);
-  TH1F *h_gEkine = new TH1F("h_gEkine","gEkine",100,0,8); //100 bins, 5MeV
-    h_gEkine->GetXaxis()->SetTitle("ekine [MeV]");
+  TH1F *h_gEkine = new TH1F("h_gEkine","Prompt Gamma Spectrum",100,0,8); //100 bins, 5MeV
+    h_gEkine->GetXaxis()->SetTitle("Kinetic Energy [MeV]");
     h_gEkine->GetYaxis()->SetTitle("count");
+    h_gEkine->GetYaxis()->SetTitleOffset(1.4);
+    h_gEkine->SetFillColor(46);
+    h_gEkine->SetLineColor(46);
+    h_gEkine->SetFillStyle(3016);
 
   Int_t count = 0;
+  Int_t ICE_nc = 0;
   Int_t cout_dead = 0;
   Int_t count_gamma = 0;
   Int_t count_tot_gamma = 0;
   Int_t count_ICE = 0;
   Int_t count_nCapture = 0;
+  Int_t to_keV = 100;
   TString serialID;
   TString previousSerialID = "0";
-  Double_t previouseventID = 0;
+  Double_t previousEventID = 0;
   Double_t previousParticleID = 0;
   Double_t previoustrackID = 0;
   //cout << "eventID | parentID | trackID | stepID |particleID |  ekine | X,Y,Z | productionVolume | creatorProcess"<<endl;
@@ -81,7 +91,8 @@ int foil(char* filename)
       // if (!(processName_== "nCapture")) {previousSerialID = serialID; continue;}
 
       // nCapture profile. Fill once per event. No why wtf...
-      if (previouseventID != eventID){h_Z->Fill(Z);}
+      if (previousEventID != eventID){h_Z->Fill(Z);}
+      if (previousEventID != eventID && particleID==1){ICE_nc ++;}
 
       serialID = MakeSerialID(trackID,parentID,eventID); // Distinguish between particles
       switch ((Int_t)creatorProcess){
@@ -99,8 +110,9 @@ int foil(char* filename)
       }
       // Filters, particle must be produced in inside foil by nCapture.
       if (serialID == previousSerialID || volumeAtVertex_ != "gd" || !(processName_== "nCapture")){
+
         // Update IDs and go to next iteration
-        previouseventID = eventID;
+        previousEventID = eventID;
         previousSerialID = serialID;
         previoustrackID = trackID;
         previousParticleID = particleID;
@@ -109,13 +121,15 @@ int foil(char* filename)
       //  ekine
       if (particleID == 1) {h_eEkine->Fill(ekine);} // electron
       if (particleID == 2) {h_gEkine->Fill(ekine);} // gamma
+      //if (particleID == 1) {h_eEkine->Fill(ekine*to_keV);} // electron
+      //if (particleID == 2) {h_gEkine->Fill(ekine*to_keV);} // gamma
 
 
       //if (!(processName_== "nCapture")) {continue;}
       //if (!(particleID== 1)) {continue;}
       //if (!(volumeAtVertex_== "gd")) {continue;}
 
-      if (eventID != previouseventID) {cout<< "\n"<<endl;}
+      if (eventID != previousEventID) {cout<< "\n"<<endl;}
       if (particleID==1 && trackID != previoustrackID && previousParticleID == 1) {cout<< "- - - - - - - - - - - - - - - - - - - - - - - - "<<endl;}
       if (particleID==1)
       {cout <<"e-: "<<  eventID <<" " <<parentID <<" " <<trackID <<" "<<stepID<<" "<<ekine<<" ("<<X<<","<<Y<<","<<Z<<") " << productionVolume <<" "<< creatorProcess<<endl;}
@@ -124,7 +138,7 @@ int foil(char* filename)
 
 
       // Update IDs
-      previouseventID = eventID;
+      previousEventID = eventID;
       previousSerialID = serialID;
       previoustrackID = trackID;
       previousParticleID = particleID;
@@ -132,9 +146,21 @@ int foil(char* filename)
     }
 
     Int_t neutrons =10000;
-    Int_t nCaptures = h_Z->GetEntries();
-    Int_t totICE = h_eEkine->GetEntries();
-    Int_t totGamma = h_gEkine->GetEntries();
+    Double_t nCaptures = h_Z->GetEntries();
+    //Int_t totICE = h_eEkine->GetEntries();
+    Double_t totICE = h_eEkine->GetEntries();
+    //Int_t totGamma = h_gEkine->GetEntries();
+    Double_t totGamma = h_gEkine->GetEntries();
+
+    // scale h_eEkine and h_gEkine
+    TH1F *h_eEkine_scaled = (TH1F*) h_eEkine->Clone("h_eEkine_scaled");
+      //h_eEkine_scaled->Scale(100/totICE);
+      h_eEkine_scaled->Scale(100/nCaptures);
+      h_eEkine_scaled->GetYaxis()->SetTitle("Conversion Electrons per capture [%]");
+    TH1F *h_gEkine_scaled = (TH1F*) h_gEkine->Clone("h_gEkine_scaled");
+      //h_gEkine_scaled->Scale(100/totGamma);
+      h_gEkine_scaled->Scale(100/nCaptures);
+      h_gEkine_scaled->GetYaxis()->SetTitle("Gamma per capture [%]");
 
     Double_t integral = 0;
     Double_t z_60 = 0;
@@ -149,11 +175,12 @@ int foil(char* filename)
       }
     }
 
+
     //h_gEkine->SetAxisRange(0,5000,"Y");
-    h_gEkine->GetYaxis()->SetTitleOffset(1.4);
-    h_gEkine->SetFillColor(46);
-    h_gEkine->SetLineColor(46);
-    h_gEkine->SetFillStyle(3016);
+    // h_gEkine->GetYaxis()->SetTitleOffset(1.4);
+    // h_gEkine->SetFillColor(46);
+    // h_gEkine->SetLineColor(46);
+    // h_gEkine->SetFillStyle(3016);
 
     //  	TPad (const char *name, const char *title, Double_t xlow, Double_t ylow, Double_t xup, Double_t yup, Color_t color=-1, Short_t bordersize=-1, Short_t bordermode=-2)
 
@@ -167,6 +194,23 @@ int foil(char* filename)
     c1->cd(1); h_Z->Draw();
     c1->cd(2); h_eEkine->Draw();
     c1->cd(3); h_gEkine->Draw();
+    c1->ToggleEventStatus();
+    //c1->cd(2); h_eEkine_scaled->Draw("HIST");
+    //c1->cd(3); h_gEkine_scaled->Draw("HIST");
+
+    /// --- Graphs for GANESH 30.04.2020 --- ///
+    //
+    TCanvas *c2= new TCanvas("c2","scaled histo");
+      //h_eEkine_scaled->SetAxisRange(0,0.26,"X");
+      h_eEkine_scaled->Draw("HIST");
+    TCanvas *c3= new TCanvas("c3","scaled histo");
+      //h_gEkine_scaled->SetAxisRange(0,0.26,"X");
+      h_gEkine_scaled->Draw("HIST");
+    TCanvas *c4= new TCanvas("c4","profile");
+      //h_gEkine_scaled->SetAxisRange(0,0.26,"X");
+      h_Z->Draw("HIST");
+
+
 
     cout << "count: " <<count << endl;
     cout << "Incident neutrons: "<<neutrons << endl;
@@ -174,6 +218,7 @@ int foil(char* filename)
     cout << "Z_60% nCapture: " <<z_60<< "mm" <<endl;
     cout << "Total ICE: " <<totICE<< endl;
     cout << "ICE yield: " <<(Float_t)totICE/nCaptures<< endl;
+    //cout << "ICE yield: " <<(Float_t)ICE_nc/nCaptures<< endl;
     cout << "Total gamma: " <<totGamma<< endl;
 
     // print count per bin and bin x-value
@@ -245,6 +290,17 @@ int foil(char* filename)
       myfile << "Total gamma: " <<totGamma << "\n";
     cout <<"saving terminal output as:"<< txtname << " ..."<<endl;
     myfile.close();
+
+    // write histograms to root file
+
+  TFile *f_hist = new TFile("histlist.root","RECREATE");
+    //l->Write("histlist", TObject::kSingleKey);
+    h_eEkine->Write("count");
+    h_gEkine->Write("count");
+    h_eEkine_scaled->Write("scaled");
+    h_gEkine_scaled->Write("scaled");
+    //l->Write("histlist", TObject::kSingleKey);
+   f_hist->ls();
 
   return 0;
 }

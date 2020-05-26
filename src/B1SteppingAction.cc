@@ -113,7 +113,8 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
      z = step->GetTrack()->GetPosition().getZ();
     }
 
-    G4double eKin = step->GetTrack()->GetKineticEnergy();
+    //G4double eKin = step->GetTrack()->GetKineticEnergy(); // step energy
+    G4double eKin = step->GetTrack()->GetVertexKineticEnergy(); // descrete spectrum
     G4double track_id = (G4double)step->GetTrack()->GetTrackID();
     G4double step_id = step->GetTrack()->GetCurrentStepNumber();
     //G4cout << step_id << G4endl;
@@ -139,6 +140,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     if (particleName == "e-")     {particle_id = 1;}
     if (particleName == "gamma")  {particle_id = 2;}
 
+    G4cout<< particleName <<"  "<<track_id<<" "<<step_id<<"  "<<eKin <<"  "<< processName_<<"  "<<volumeAtVertex_<< G4endl;
     // Store step information
     fEventAction->StoreKineticEnergy(eKin);
     fEventAction->StoreX(x);

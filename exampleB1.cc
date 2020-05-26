@@ -79,6 +79,7 @@ int main(int argc,char** argv)
 
   runManager->SetUserInitialization(new PhysicsList(det));
   setenv("G4NEUTRONHP_USE_ONLY_PHOTONEVAPORATION", "1", true);
+  //unsetenv("G4NEUTRONHP_USE_ONLY_PHOTONEVAPORATION");
 
   char cfilename[100];
 	 strcpy(cfilename,argv[2]); //volume: sens/foil
@@ -88,6 +89,11 @@ int main(int argc,char** argv)
    strcat(cfilename,"_thick");
    strcat(cfilename,argv[4]); //thick
    strcat(cfilename,"um");
+   if (argc >4)
+   {
+     strcat(cfilename,"_");
+     strcat(cfilename,argv[5]); // comment
+   }
   //G4cout << (G4String)filename << G4endl;
   G4String filename = (G4String)cfilename;
 

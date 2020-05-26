@@ -101,7 +101,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   G4double alpide_x = 30.0*mm;
   G4double alpide_y = 15.0*mm;
   G4double alpide_z = 50.0*um;
-  G4double al_z = 25*um;
+  G4double al_z = 11*um;//25*um;
   //G4double gd_z = 10*um; // Default*
 
 
@@ -113,7 +113,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4Material* Silicon = nist->FindOrBuildMaterial("G4_Si");
   G4Material* Aluminium = nist->FindOrBuildMaterial("G4_Al");
-  //G4Material* converter_mat = nist->FindOrBuildMaterial("G4_Gd");
+  G4Material* converter_mat = nist->FindOrBuildMaterial("G4_Gd");
   // density calc. -----------------
   //G4double z, a_155, a_157;
   // G4double density_155,density_157;
@@ -128,17 +128,17 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   //converter_mat = Gd_157;
 
   // G4ISOTOPE -----------------
-    G4int z, a, ncomp;
-    G4double density_155,density_157, abundance, density, fractionmass;
-    density_155 = 6.98855*g/cm3; //Gd-155
-    density_157 = 7.07873*g/cm3; //Gd-157
-    G4Element* GDisotope = new G4Element("Gdiso","GD",ncomp=1);
-    //G4Isotope* gd155 = new G4Isotope("GD155", z=64, a=155., 154.92*g/mole);
-    //GDisotope->AddIsotope(gd155, abundance=100.0*perCent); density = density_155;
-    G4Isotope* gd157 = new G4Isotope("GD157", z=64, a=157., 156.92*g/mole);
-    GDisotope->AddIsotope(gd157, abundance=100.0*perCent); density = density_157;
-    G4Material* converter_mat = new G4Material("Gadolinium",density, 1, kStateSolid);
-    converter_mat->AddElement(GDisotope, fractionmass = 1 );
+    // G4int z, a, ncomp;
+    // G4double density_155,density_157, abundance, density, fractionmass;
+    // density_155 = 6.98855*g/cm3; //Gd-155
+    // density_157 = 7.07873*g/cm3; //Gd-157
+    // G4Element* GDisotope = new G4Element("Gdiso","GD",ncomp=1);
+    // //G4Isotope* gd155 = new G4Isotope("GD155", z=64, a=155., 154.92*g/mole);
+    // //GDisotope->AddIsotope(gd155, abundance=100.0*perCent); density = density_155;
+    // G4Isotope* gd157 = new G4Isotope("GD157", z=64, a=157., 156.92*g/mole);
+    // GDisotope->AddIsotope(gd157, abundance=100.0*perCent); density = density_157;
+    // G4Material* converter_mat = new G4Material("Gadolinium",density, 1, kStateSolid);
+    // converter_mat->AddElement(GDisotope, fractionmass = 1 );
 
   G4Box* solidWorld =
     new G4Box("World",                       //its name

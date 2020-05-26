@@ -49,7 +49,7 @@
 #include "G4EmStandardPhysics_option2.hh"
 #include "G4EmStandardPhysics_option3.hh"
 #include "G4EmStandardPhysics_option4.hh"
-#include "G4EmStandardPhysicsGS.hh"
+//*** #include "G4EmStandardPhysicsGS.hh"
 #include "G4EmStandardPhysicsSS.hh"
 #include "G4EmStandardPhysicsWVI.hh"
 #include "G4EmLivermorePhysics.hh" //*
@@ -99,8 +99,8 @@ PhysicsList::PhysicsList(B1DetectorConstruction* ptr)
   // EM physics
   fEmName = G4String("emstandard_opt0");
   fEmPhysicsList = new G4EmLivermorePhysics(0); //*
-  G4EmParameters::Instance()->AddPAIModel("all","world","pai");
-  G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
+  //*** G4EmParameters::Instance()->AddPAIModel("all","world","pai");
+  //*** G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
   SetVerboseLevel(0);
 }
 
@@ -184,19 +184,20 @@ void PhysicsList::AddPhysicsList(const G4String& name)
     delete fEmPhysicsList;
     fEmPhysicsList = new G4EmStandardPhysicsSS(0);
 
-  } else if (name == "emstandardGS") {
+  } //*** else if (name == "emstandardGS") {
+  //***
+  //***   fEmName = name;
+  //***   delete fEmPhysicsList;
+  //***   fEmPhysicsList = new G4EmStandardPhysicsGS(0);
+  //***
+  //*** } else if (name == "pai") {
+  //***   G4EmParameters::Instance()->AddPAIModel("all","world","pai");
+  //***
+  //*** } else if (name == "pai_photon") {
+  //***   G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
 
-    fEmName = name;
-    delete fEmPhysicsList;
-    fEmPhysicsList = new G4EmStandardPhysicsGS(0);
-
-  } else if (name == "pai") {
-    G4EmParameters::Instance()->AddPAIModel("all","world","pai");
-
-  } else if (name == "pai_photon") {
-    G4EmParameters::Instance()->AddPAIModel("all","world","pai_photon");
-
-  } else if (name == "emlivermore") {
+  //}
+   else if (name == "emlivermore") {
 
     fEmName = name;
     delete fEmPhysicsList;

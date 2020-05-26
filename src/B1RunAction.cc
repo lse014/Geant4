@@ -56,7 +56,7 @@ B1RunAction::B1RunAction(G4String filename)
   man->SetFileName(fileName);
   //man->SetFileName("../B1/dat/sensor/Electrons");
   man->SetVerboseLevel(1);
-  man->SetNtupleMerging(true);
+  //*** man->SetNtupleMerging(true); 
   man->SetActivation(true);
   man->	SetFirstNtupleId(1);
   //	Creating	ntuples
